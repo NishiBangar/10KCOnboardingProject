@@ -1,0 +1,73 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
+import { Subscription } from 'rxjs';
+
+import { Post } from '../post.model';
+import { PostsService } from '../../services/posts.service';
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html',
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent implements OnInit {
+  // posts = [
+  //   {title: 'First Post', content: 'This is the First post\' content'},
+  //   {title: 'Second Post', content: 'This is the Second post\' content'},
+  //   {title: 'Third Post', content: 'This is the Third post\' content'},
+  // ];
+  // Make the property bindable via outside property (PARENT property)
+  // @Input() posts: Post[] = [];
+  posts: Post[] = [];
+  private postsSub: Subscription;
+  isLoading = false;
+  totalPosts = 0;
+  postsPerPage = 2;
+  pageSizeOptions = [1,2,5,10];
+  currentPage = 1;
+
+  constructor(public postsService: PostsService) { }
+
+  ngOnInit(): void {
+    //Loading
+    this.isLoading = true;
+    // this.posts = this.postsService.getPosts();
+    this.postsService.getPosts(this.postsPerPage, this.currentPage); //(default: page 1) arg1 = pageSize; arg2 = currentPage
+
+    // Setup up a listener to the subject
+     this.postsSub = this.postsService.getPostUpdateListener()
+                              .subscribe((postData: {posts: Post[], postsCount: number})=> {
+
+                                //Loading
+                                this.isLoading = false;
+                                this.totalPosts = postData.postsCount;
+                                this.posts = postData.posts;
+                              });
+  }
+
+  onDelete(postId: string){
+    this.isLoading = true;
+    this.postsService.deletePost(postId)
+      .subscribe( () => {
+        this.postsService.getPosts(this.postsPerPage, this.currentPage);
+      });
+  }
+
+  // Pagination manipulation
+  onChangePage(pageData: PageEvent) {
+    this.isLoading = true;
+    console.log("----- Pagination Event data -----");
+    console.log(pageData);
+    this.currentPage = pageData.pageIndex + 1;
+    this.postsPerPage = pageData.pageSize;
+    this.postsService.getPosts(this.postsPerPage, this.currentPage); // arg1 = pageSize; arg2 = currentPage
+
+  };
+
+  // To avoid memory leak, destroy the subscription data,
+  // when the componenet dies.
+  ngOnDestroy() {
+    this.postsSub.unsubscribe();
+  }
+
+}
