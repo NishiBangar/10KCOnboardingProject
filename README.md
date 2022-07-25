@@ -1,17 +1,15 @@
-# 10KCOnboardingProject
-10KC - Onboarding project
-
+# 10KC - OnboardingProject
 
 ## Create a simple photo sharing web application using MEAN stack
 
-● Support adding and deleting photos
-● Store any uploaded images in MongoDB
-● The client-side code written in Angular (using Angular/CLI)
-● The server written using Node.js and Express.js
-● The database built with MongoDB and Mongoose
-● Use Git for source control on a public repository (ideally GitHub)
+- Support adding and deleting photos
+- Store any uploaded images in MongoDB
+- The client-side code written in Angular (using Angular/CLI)
+- The server written using Node.js and Express.js
+- The database built with MongoDB and Mongoose
+- Use Git for source control on a public repository (ideally GitHub)
 
-### Implementation Summary
+## Implementation Summary
 
 - `Backend (Node.js & Express & MongoDB)`
     - Seperation & Modularized implementation
