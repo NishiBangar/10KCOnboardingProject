@@ -1,7 +1,7 @@
 import { AbstractControl } from "@angular/forms";
 import { Observable, Observer, of } from "rxjs";
 
-// Read the file Asynchronously (async validator)
+// Read the file Asynchronously (async validator) --> return a promise/observable error obj
 export const mimeType = (control: AbstractControl): Promise<{[key: string]: any}> | Observable<{[key: string]: any}> => {
 
   // Check if the image is a string and not a file
@@ -21,7 +21,10 @@ export const mimeType = (control: AbstractControl): Promise<{[key: string]: any}
 
     // MIME type validation
     fileReader.addEventListener("loadend", () => {
-      // Get the file type
+      // Get the file type (ifValid type)  --> Unit8Array --> creates new array of 8bits unsigned integers
+                                            // Access file metadata details
+
+      // Get file MIME type
       const arr = new Uint8Array(fileReader.result as ArrayBuffer).subarray(0, 4); // Create new array of 8 bit integers
       let header = "";
       let isValid = false;
@@ -29,6 +32,7 @@ export const mimeType = (control: AbstractControl): Promise<{[key: string]: any}
       for(let i=0; i< arr.length; i++){
         header += arr[i].toString(16);
       }
+      // File MIME type patterns (.jpg, .jpeg, .png)
       switch (header) {
         case "89504e47":
           isValid = true;

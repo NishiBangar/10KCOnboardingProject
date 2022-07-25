@@ -57,7 +57,7 @@ export class PostsService {
     const postData = new FormData(); // combine text and blog data
     postData.append('title', title);
     postData.append('content', content);
-    postData.append('image', image, title);  //arg1 -> propertyName; arg2 -> imageFile; arg3 -> fileName sent to backend
+    postData.append('image', image, title);//arg1 -> propertyName; arg2 -> imageFile; arg3 -> fileName sent to backend
     //Send POST data to the server
     this.http
       .post<{message: string, post: Post}>(
