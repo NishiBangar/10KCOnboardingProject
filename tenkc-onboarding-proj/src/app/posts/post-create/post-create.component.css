@@ -14,7 +14,7 @@ input[type="file"] {
 .image-preview {
   height: 10rem;
   margin: 1rem 0;
-  margin-top: -10%;
+  margin-top: -5%;
     text-align: right;
 }
 
@@ -31,4 +31,5 @@ input[type="file"] {
 
 .image-suppurting-formats-error{
   font-size: small;
+  text-align: center  ;
 }

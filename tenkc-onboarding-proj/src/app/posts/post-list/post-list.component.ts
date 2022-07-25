@@ -25,7 +25,6 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     //Loading
     this.isLoading = true;
-
     this.postsService.getPosts(this.postsPerPage, this.currentPage); //(default: page 1) arg1 = pageSize; arg2 = currentPage
 
     // Setup up a listener to the subject
@@ -43,7 +42,8 @@ export class PostListComponent implements OnInit {
     this.isLoading = true;
     this.postsService.deletePost(postId)
       .subscribe( () => {
-        this.postsService.getPosts(this.postsPerPage, this.currentPage);
+
+        this.postsService.getPosts(this.postsPerPage, this.currentPage) ;
       });
   }
 
