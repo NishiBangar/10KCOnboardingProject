@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PostCreateComponent } from './post-create.component';
 import { PostsService } from '../../services/posts.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { Post } from '../post.model';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
@@ -19,7 +19,14 @@ class RouterStub {
 
 //Stub class for ActivatedRoute
 class ActivatedRouteStub {
-  params: Observable<any> = of(true);
+  private subject = new Subject();
+
+  push(value){
+    this.subject.next(value);
+  }
+  get params(){
+    return this.subject.asObservable();
+  }
 }
 
 
@@ -77,40 +84,51 @@ describe('PostCreateComponent', () => {
     });
   });
 
-
   // Create Post() method
   describe('onSavePost()', () => {
     let form: NgForm;
     let createSpy: jasmine.Spy;
     beforeEach(() => {
+      component.mode = 'create';
       mockPost = {
         title: 'test title',
         content: 'some fantastic content',
-        image: 'imagePath_1'
+        image: 'imagePath_1.jpg'
       };
 
-      fixture.nativeElement.querySelector('#title').value = mockPost.title;
-      fixture.nativeElement
-        .querySelector('#title')
-        .dispatchEvent(new Event('input'));
+      component.form.setValue({
+        'title': mockPost.title,
+        'content': mockPost.content,
+        'image': mockPost.image
+      });
 
-      fixture.nativeElement.querySelector('#content').value = mockPost.content;
-
-      fixture.nativeElement
-        .querySelector('#content')
-        .dispatchEvent(new Event('input'));
+      // fixture.nativeElement.querySelector('#title').value = mockPost.title;
+      // fixture.nativeElement.querySelector('#title').dispatchEvent(new Event('input'));
+      // fixture.nativeElement.querySelector('#image').value = mockPost.image;
+      // fixture.nativeElement.querySelector('#content').value = mockPost.content;
+      // fixture.nativeElement.querySelector('#content').dispatchEvent(new Event('input'));
 
       fixture.nativeElement.querySelector('#submitButton').click();
     });
 
-    it('should update isLoading to true on submit event', () => {
-      expect(component.isLoading).toBe(true);
+    it('should call createPost() service method when form is submitted', () => {
+      expect(component.form.valid).toBeTruthy();
     });
 
-    it('should call createPost() service method when form is submitted', () => {
-      expect(addPostSpy).toHaveBeenCalled();
-    });
+    it('should fail when form is invalid', () => {
+      component.form.controls['image'].setValue('');
+      expect(component.form.invalid).toBeTruthy();
+    })
   });
+   /* it('should update mode -> create/update based on routeParam value', () => {
+      let router = TestBed.inject(Router);
+      let route = TestBed.get(ActivatedRoute);
+
+      route.push({"postId": "1"});
+      // route.params.
+      console.log("----- activated route mode");
+      console.log(component.mode);
+    }); */
 
 });
 

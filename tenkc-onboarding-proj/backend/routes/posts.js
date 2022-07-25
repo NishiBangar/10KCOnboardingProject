@@ -3,6 +3,9 @@ const multer = require('multer');
 
 const router = express.Router();
 
+// Mongo model -- Post model
+const Post = require('../models/post');
+
 // Helper to map of Mime types and their extensions
 const MIME_TYPE_MAP = {
   'image/png': 'png',
@@ -28,21 +31,20 @@ const storage = multer.diskStorage({
    }
 });
 
-// Mongo model -- Post model
-const Post = require('../models/post');
 
-
-// Handle POST request to SAVE a  post
+// Handle POST request to SAVE a post
 router.post("", multer({storage: storage}).single("image") , (req, res, next) => {
-  // const post = req.body;
+
   const url = req.protocol + '://' + req.get("host"); // Get url of the server
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
     imagePath: url + "/images/" + req.file.filename
   });
+
+  // Save details in MongoDB
   post.save().then(createdPost => {
-    res.status(201).json({
+    res.status(200).json({
       message: "Post added successfully",
       post: {
         id: createdPost._id,
@@ -50,38 +52,20 @@ router.post("", multer({storage: storage}).single("image") , (req, res, next) =>
         content: createdPost.content,
         imagePath: createdPost.imagePath
       }
-      // post: {
-      //   // 1st --> using spread operator, send a copy of post object
-      //   // 2nd --> add id property with updated value
-      //   ...createdPost,
-      //   id: createdPost._id
-      // }
-
-      // postId: createdPost._id
-
     });
   });
 
 });
 
+// Handle GET request
 router.get('', (req, res, next) => {
-  // res.send('Hello from Express!');
-  //  const posts = [
-  //   { id: 'fasdf123l',
-  //     title: 'First server-side post',
-  //     content: "This is coming from the server"
-  //   },
-  //   { id: 'asdfasdf1',
-  //     title: 'Second server-side post',
-  //     content: "This is coming from the server"
-  //   }
-  // ];
 
-  console.log("--- Query Parameters ---");
-  console.log(req.query);
   const postQuery = Post.find();
+
+  // Pagination --> Get details for the specific page according to the page size
   const pageSize = +req.query.pageSize;
   const currentPage = +req.query.page;
+
   let fetchedPosts;
   if(pageSize && currentPage) { // Pagination query
     // 1 --> skip previous page contents
@@ -93,6 +77,7 @@ router.get('', (req, res, next) => {
       .limit(pageSize);
   }
 
+  // Query MongoDB to get posts
   postQuery.find().then(documents => {
     fetchedPosts = documents;
     return Post.count();
@@ -105,17 +90,21 @@ router.get('', (req, res, next) => {
   });
 });
 
-router.delete("/:id", (req, res, next) => {
-  Post.deleteOne({_id: req.params.id})
-    .then(result => {
-    });
-  res.status(200).json({ message: 'Posts deleted successfully'});
+// Handle GET request --> Get post by ID
+router.get("/:id", (req,res,next)=>{
+  Post.findById(req.params.id).then(post => {
+    if(post) {
+      res.status(200).json(post);
+    }
+    else {
+      res.status(404).json({message: "Post not found"});
+    }
+  })
 });
 
-// Update post based on Id
+// Handle PUT requests --> Update post based on ID
 router.put("/:id", multer({storage: storage}).single("image"), (req, res, next) => {
-  // console.log("--- Update: file from server: ");
-  // console.log(req.file);
+
   let imagePath = req.body.imagePath;  // if existing file (no new upload) -> Json obj
   if(req.file){ // if new file to updload -> FormData
     const url = req.protocol + '://' + req.get("host"); // Get url of the server
@@ -127,8 +116,8 @@ router.put("/:id", multer({storage: storage}).single("image"), (req, res, next) 
     content: req.body.content,
     imagePath: imagePath
   });
-  console.log("-- Post data from FE");
-  console.log(post);
+
+  // Query MongoDB
   Post.updateOne({_id: req.params.id}, post)
     .then(result => {
       res.status(200).json({
@@ -137,15 +126,18 @@ router.put("/:id", multer({storage: storage}).single("image"), (req, res, next) 
     });
 });
 
-router.get("/:id", (req,res,next)=>{
-  Post.findById(req.params.id).then(post => {
-    if(post) {
-      res.status(200).json(post);
-    }
-    else {
-      res.status(404).json({message: "Post not found"});
-    }
-  })
+// Handle DELETE requests --> Detaile post based on ID
+router.delete("/:id", (req, res, next) => {
+  //Query MongoDB
+  Post.deleteOne({_id: req.params.id})
+    .then(result => {
+    });
+  res.status(200).json({ message: 'Posts deleted successfully'});
 });
+
+
+
+
+
 
 module.exports = router;

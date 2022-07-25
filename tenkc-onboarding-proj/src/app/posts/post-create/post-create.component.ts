@@ -14,15 +14,11 @@ import { mimeType } from './mime-type.validator';
 })
 export class PostCreateComponent implements OnInit {
 
-  // Making Agular aware that an event will be emitted
-  // Turns this property into an EVENT, which can be listened to from the outside (PARENT COMPONENT)
-  // @Output() postCreated = new EventEmitter<Post>();
-
   enteredData = {
     title: '',
     content: ''
   }
-  private mode = 'create';
+   mode = 'create';
   private postId: string;
 
   form: FormGroup;
@@ -63,8 +59,6 @@ export class PostCreateComponent implements OnInit {
                            content: postData.content,
                            imagePath: postData.imagePath};
 
-                           console.log("--- Edit -- post details");
-                           console.log(this.post);
                            this.imagePreview = this.post.imagePath;
               // Populate Reactive form with values
               this.form.setValue({
@@ -92,9 +86,6 @@ onImagePicked(event: Event) {
 
   // Inform Angular to re-evalueate validation after file update
   this.form.get('image').updateValueAndValidity();
-  // console.log(file);
-  // console.log(this.form);
-  console.log(this.form);
 
   // The below proces is done, because file reading is an ASYN process,
       //  hence --> onLoad() --> Do things once file is loaded
@@ -103,8 +94,7 @@ onImagePicked(event: Event) {
   // Do something once the file loaded/read
   reader.onload = () => {
     this.imagePreview = reader.result as string;
-    // console.log("--- Reader Onload --- Image Preview");
-    // console.log(this.imagePreview);
+
   };
   //Load a file
   reader.readAsDataURL(file);
@@ -130,44 +120,5 @@ onImagePicked(event: Event) {
     }
     this.form.reset();
   }
-
-
-  // onAddPost(){
-     // alert("Post Added");
-    // this.newPost = this.enteredValue;
-    // const post: Post = {
-    //   title: this.enteredData.title,
-    //   content: this.enteredData.content
-  // }
-  //   //Emit event with data to be listened from other component (through Parent component)
-  //   this.postCreated.emit(post);
-  // }
-
-
-    /* onSavePost(form: NgForm){
-      console.log("----- Form content");
-      console.log(form);
-      if(form.invalid){
-        return;
-      }
-      // Loading spinner
-      this.isLoading = true;
-
-      if(this.mode === 'create'){
-        this.postsService.addPost(form.value.title, form.value.content);
-      } else{
-        this.postsService.updatePost(this.postId, form.value.title, form.value.content);
-      }
-      form.resetForm();
-      // const post: Post = {
-      //   title: form.value.title,
-      //   content: form.value.content
-      // }
-      //Emit event with data to be listened from other component (through Parent component)
-    // this.postCreated.emit(post);
-    } */
-
-
-
 
 }

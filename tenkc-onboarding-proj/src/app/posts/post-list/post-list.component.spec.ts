@@ -116,8 +116,6 @@ describe('PostListComponent', () => {
       expect(deleteSpy).toHaveBeenCalled();
     });
 
-
-
   });
 
 });

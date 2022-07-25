@@ -11,13 +11,7 @@ import { PostsService } from '../../services/posts.service';
   styleUrls: ['./post-list.component.css']
 })
 export class PostListComponent implements OnInit {
-  // posts = [
-  //   {title: 'First Post', content: 'This is the First post\' content'},
-  //   {title: 'Second Post', content: 'This is the Second post\' content'},
-  //   {title: 'Third Post', content: 'This is the Third post\' content'},
-  // ];
-  // Make the property bindable via outside property (PARENT property)
-  // @Input() posts: Post[] = [];
+
   posts: Post[] = [];
   private postsSub: Subscription;
   isLoading = false;
@@ -31,7 +25,7 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     //Loading
     this.isLoading = true;
-    // this.posts = this.postsService.getPosts();
+
     this.postsService.getPosts(this.postsPerPage, this.currentPage); //(default: page 1) arg1 = pageSize; arg2 = currentPage
 
     // Setup up a listener to the subject
@@ -56,8 +50,6 @@ export class PostListComponent implements OnInit {
   // Pagination manipulation
   onChangePage(pageData: PageEvent) {
     this.isLoading = true;
-    console.log("----- Pagination Event data -----");
-    console.log(pageData);
     this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
     this.postsService.getPosts(this.postsPerPage, this.currentPage); // arg1 = pageSize; arg2 = currentPage

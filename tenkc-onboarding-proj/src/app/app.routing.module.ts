@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PostListComponent } from "./posts/post-list/post-list.component";
 import { PostCreateComponent } from "./posts/post-create/post-create.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: PostListComponent},
   { path: 'create', component: PostCreateComponent},
   { path: 'edit/:postId', component: PostCreateComponent}
@@ -15,5 +15,6 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {
+  routes: any;
 
 }

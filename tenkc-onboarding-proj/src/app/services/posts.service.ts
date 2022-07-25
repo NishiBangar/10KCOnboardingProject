@@ -13,9 +13,10 @@ import { Router } from '@angular/router';
 export class PostsService {
   constructor(private http: HttpClient, private router: Router) { }
 
-  private posts: Post[] = [];
+  posts: Post[] = [];
   private postsUpdated = new Subject<{posts: Post[]; postsCount: number}>();
   private backend_url: string = "http://localhost:4000/api/posts";
+
 
   // Get all posts
   getPosts(postsPerPage: number, currentPage: number) {
@@ -42,6 +43,7 @@ export class PostsService {
       });
   };
 
+
   //Get post based on the postId;
   getPost(id: string) {
   // return {...this.posts.find(p => p.id === id)}
@@ -49,8 +51,9 @@ export class PostsService {
         (this.backend_url + "/" +id);
   }
 
+
   // Add post with image using FormData object
-  addPost(title: string, content: string, image: File) {
+  addPost(title: string, content: string, image: File | string) {
     const postData = new FormData(); // combine text and blog data
     postData.append('title', title);
     postData.append('content', content);
@@ -60,43 +63,11 @@ export class PostsService {
       .post<{message: string, post: Post}>(
           this.backend_url, postData)
             .subscribe((responseData) => {
-              // console.log("---- Response from Server ----");
-              // console.log(responseData);
-              // console.log("--- image path ----");
-              // console.log(responseData.post.imagePath);
-              // console.log(responseData.post.title);
-              // const post: Post = {
-              //   id: responseData.post.id,
-              //   title: title,
-              //   content: content,
-              //   imagePath: responseData.post.imagePath
-              // };
-              // this.posts.push(post);
-              // // pushes/emits the new value after updated --> emitting whenever adding a post
-              // this.postsUpdated.next([...this.posts]);
 
               // Navigate back to the root page (lists page)
               this.router.navigate(['/']);
             });
   };
-/* // Add post without image using JSON object
-  addPost(title: string, content: string) {
-    const post: Post = {id: null, title: title, content: content};
-    //Send POST data to the server
-    this.http
-      .post<{message: string, postId: string}>('http://localhost:4000/api/posts', post)
-        .subscribe((responseData) => {
-          console.log(responseData.message);
-          const id = responseData.postId;
-          post.id = id;
-          this.posts.push(post);
-           // pushes/emits the new value after updated --> emitting whenever adding a post
-          this.postsUpdated.next([...this.posts]);
-
-          // Navigate back to the root page (lists page)
-          this.router.navigate(['/']);
-        });
-  }; */
 
   //Update Post ---- if String Image - send Json req; ---- if File obj -> send as FormData
   updatePost(id: string, title: string, content: string, image: File | string){
@@ -116,41 +87,14 @@ export class PostsService {
           imagePath: image };
     }
 
-
     this.http.put(this.backend_url + "/" +id, postData)
       .subscribe((response)=> {
-        // console.log(response);
-        // const updatedPosts = [...this.posts];
-        // const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
-        // const post: Post = {
-        //   id: id,
-        //   title: title,
-        //   content: content,
-        //   imagePath: ""
-        // }
-        // updatedPosts[oldPostIndex] = post;
-        // this.posts = updatedPosts;
-        // this.postsUpdated.next([...this.posts]);
 
         // Navigate back to the root page (lists page)
         this.router.navigate(['/']);
-
-        // const updatedPosts = this.posts.filter(post => post.id != postId);
-        // this.posts = updatedPosts;
-        // this.postsUpdated.next([...this.posts]);
       })
   };
 
-  // Delete a post --> method 1 -> without pagination details from the server
-  /* deletePost(postId: string) {
-    this.http.delete("http://localhost:4000/api/posts/"+postId)
-      .subscribe(()=> {
-        console.log("Deleted post");
-        const updatedPosts = this.posts.filter(post => post.id != postId);
-        this.posts = updatedPosts;
-        this.postsUpdated.next([...this.posts]);
-      })
-  };*/
 
   // Delete a post --> method 2 --> with pagination details
   deletePost(postId: string) {
