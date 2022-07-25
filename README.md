@@ -1,6 +1,4 @@
-# 10KCOnboardingProject
-10KC - Onboarding project
-
+# 10KC - OnboardingProject
 
 ## Create a simple photo sharing web application using MEAN stack
 
@@ -11,7 +9,7 @@
 - The database built with MongoDB and Mongoose
 - Use Git for source control on a public repository (ideally GitHub)
 
-### Implementation Summary
+## Implementation Summary
 
 - `Backend (Node.js & Express & MongoDB)`
     - Seperation & Modularized implementation
